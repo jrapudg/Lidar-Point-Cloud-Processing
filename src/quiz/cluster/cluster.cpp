@@ -6,6 +6,7 @@
 #include <chrono>
 #include <string>
 #include "kdtree.h"
+#include <set>
 
 // Arguments:
 // window is the region to draw box around
@@ -75,12 +76,42 @@ void render2DTree(Node* node, pcl::visualization::PCLVisualizer::Ptr& viewer, Bo
 
 }
 
+void proximity(std::vector<int>& cluster, std::vector<float> point, int index, KdTree* tree, std::set<int>& open, float distanceTol,  std::set<int>& closed)
+{
+	closed.insert(index);
+	cluster.push_back(index);
+	open.erase(index);
+
+	std::vector<int> nearby = tree->search(point, distanceTol);
+	
+	for(int id : nearby)
+	{
+		if(!closed.count(id))
+			proximity(cluster, point, id, tree, open, distanceTol, closed);
+	} 
+
+}
+
 std::vector<std::vector<int>> euclideanCluster(const std::vector<std::vector<float>>& points, KdTree* tree, float distanceTol)
 {
-
-	// TODO: Fill out this function to return list of indices for each cluster
-
+	std::set <int> open;
+	std::set <int> closed;
+	for (int i=0; i < points.size(); i++)
+	{
+		open.insert(i);
+	}
 	std::vector<std::vector<int>> clusters;
+	// TODO: Fill out this function to return list of indices for each cluster
+	while(!open.empty())
+	{
+		std::vector<int> cluster;
+		proximity(cluster, points[*open.begin()], *open.begin(), tree, open, distanceTol, closed);
+		clusters.push_back(cluster);
+	}
+    // for (std::set<int>::iterator it=open.begin(); it!=open.end(); ++it)
+    // 	std::cout << ' ' << *it;
+
+	
  
 	return clusters;
 
@@ -126,7 +157,15 @@ int main ()
   	auto endTime = std::chrono::steady_clock::now();
   	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
   	std::cout << "clustering found " << clusters.size() << " and took " << elapsedTime.count() << " milliseconds" << std::endl;
-
+	
+	for(std::vector<int> cluster : clusters)
+  	{
+		  std::cout << "Cluster: ";
+		  for (int element : cluster){
+			  std::cout << element << " ";
+		  }
+		  std::cout<< std::endl;
+	} 
   	// Render clusters
   	int clusterId = 0;
 	std::vector<Color> colors = {Color(1,0,0), Color(0,1,0), Color(0,0,1)};
