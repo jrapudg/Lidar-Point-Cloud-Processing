@@ -145,7 +145,6 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
     std::cout << "filtering took " << elapsedTime.count() << " milliseconds" << std::endl;
 
     return cloud_region;
-
 }
 
 template<typename PointT>
@@ -176,7 +175,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 {
     // Time segmentation process
     auto startTime = std::chrono::steady_clock::now();
-	
+	/*
     // Create the segmentation object
     pcl::SACSegmentation<PointT> seg;
     pcl::PointIndices::Ptr inliers {new pcl::PointIndices};
@@ -199,8 +198,8 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     }
 
     std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult = SeparateClouds(inliers,cloud);
-
-   /*
+    */
+   
     std::unordered_set<int> inliers = Ransac(cloud, maxIterations, distanceThreshold);
 
     typename pcl::PointCloud<PointT>::Ptr  cloudInliers(new pcl::PointCloud<PointT>());
@@ -220,8 +219,11 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
         std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
     }
 
-    std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult(cloudInliers, cloudOutliers);
-    */
+    std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult(cloudOutliers, cloudInliers);
+    
+
+
+
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
     std::cout << "plane segmentation took " << elapsedTime.count() << " milliseconds" << std::endl;
