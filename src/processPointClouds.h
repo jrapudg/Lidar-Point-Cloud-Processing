@@ -19,7 +19,12 @@
 #include <chrono>
 #include <unordered_set>
 #include "render/box.h"
+#include "quiz/cluster/kdtree.h"
 
+/*
+std::vector<std::vector<int>> euclideanCluster(const std::vector<std::vector<float>>& points, KdTree* tree, float distanceTol);
+void proximity(std::vector<int>& cluster, std::vector<float> point, int index, KdTree* tree, std::set<int>& open, float distanceTol,  std::set<int>& closed);
+*/
 template<typename PointT>
 class ProcessPointClouds {
 public:
